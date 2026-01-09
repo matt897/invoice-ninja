@@ -14,9 +14,9 @@ services:
       - app_storage:/var/www/html/storage
     depends_on:
       mysql:
-        condition: service_healthy
+        condition: service_started
       redis:
-        condition: service_healthy
+        condition: service_started
 
   nginx:
     image: nginx:alpine
@@ -29,16 +29,16 @@ services:
       - app_storage:/var/www/html/storage:ro
     depends_on:
       app:
-        condition: service_healthy
+        condition: service_started
 
   mysql:
     image: mysql:8
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE:-ninja}
+      MYSQL_USER: ${DB_USERNAME:-ninja}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-ninja}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-ninjaAdm1nPassword}
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -49,8 +49,8 @@ services:
           "ping",
           "-h",
           "localhost",
-          "-u${MYSQL_USER}",
-          "-p${MYSQL_PASSWORD}",
+          "-u${MYSQL_USER:-ninja}",
+          "-p${MYSQL_PASSWORD:-ninja}",
         ]
 
   redis:
