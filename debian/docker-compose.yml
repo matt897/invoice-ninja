@@ -6,6 +6,13 @@ services:
     restart: unless-stopped
     env_file:
       - ./.env
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-ninja}
+      DB_USERNAME: ${DB_USERNAME:-ninja}
+      DB_PASSWORD: ${DB_PASSWORD:-ninja}
     volumes:
       # - ./php/php.ini:/usr/local/etc/php/conf.d/invoiceninja.ini:ro
       # - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/invoiceninja.conf:ro
@@ -14,9 +21,11 @@ services:
       - app_storage:/var/www/html/storage
     depends_on:
       mysql:
-        condition: service_started
+        condition: service_healthy
       redis:
         condition: service_started
+    networks:
+      - invoiceninja
 
   nginx:
     image: nginx:alpine
@@ -47,10 +56,15 @@ services:
           "mysqladmin",
           "ping",
           "-h",
-          "localhost",
-          "-u${MYSQL_USER:-ninja}",
-          "-p${MYSQL_PASSWORD:-ninja}",
+          "127.0.0.1",
+          "-uroot",
+          "-p${MYSQL_ROOT_PASSWORD:-ninjaAdm1nPassword}",
         ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks:
+      - invoiceninja
 
   redis:
     image: redis:alpine
@@ -69,3 +83,7 @@ volumes:
     driver: local
   redis_data:
     driver: local
+
+networks:
+  invoiceninja:
+    driver: bridge
