@@ -43,9 +43,9 @@ services:
     image: mysql:8.0
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-ninja}
-      MYSQL_USER: ${DB_USERNAME:-ninja}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-ninja}
+      MYSQL_DATABASE: ${DB_DATABASE:-invoiceninja}
+      MYSQL_USER: ${DB_USERNAME:-invoiceninja}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-invoiceninja}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-ninjaAdm1nPassword}
     volumes:
       - mysql_data:/var/lib/mysql
