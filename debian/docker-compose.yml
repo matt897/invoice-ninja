@@ -25,7 +25,7 @@ services:
       redis:
         condition: service_started
     networks:
-      - invoiceninja
+      invoiceninja:
 
   nginx:
     image: nginx:alpine
@@ -64,7 +64,9 @@ services:
       timeout: 5s
       retries: 20
     networks:
-      - invoiceninja
+      invoiceninja:
+        aliases:
+          - mysql
 
   redis:
     image: redis:alpine
@@ -86,4 +88,5 @@ volumes:
 
 networks:
   invoiceninja:
+    name: invoiceninja
     driver: bridge
