@@ -1,7 +1,5 @@
 services:
   app:
-    build:
-      context: .
     image: invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
     env_file:
@@ -25,7 +23,7 @@ services:
       redis:
         condition: service_started
     networks:
-      invoiceninja:
+      - invoiceninja
 
   nginx:
     image: nginx:alpine
@@ -42,7 +40,7 @@ services:
       invoiceninja:
 
   mysql:
-    image: mysql:8
+    image: mysql:8.0
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-ninja}
@@ -52,16 +50,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "127.0.0.1",
-          "-uroot",
-          "-p${MYSQL_ROOT_PASSWORD:-ninjaAdm1nPassword}",
-        ]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$MYSQL_ROOT_PASSWORD\" --silent"]
       interval: 10s
       timeout: 5s
       retries: 20
